@@ -1,0 +1,278 @@
+CREATE DATABASE work;
+USE work;
+CREATE TABLE Worker(
+    worker_id  INT  NOT NULL PRIMARY KEY,
+    F_name VARCHAR(25),
+    L_name VARCHAR(25),
+    Salary INT,
+    Join_date  DATETIME,
+    Dept  VARCHAR(25)
+);
+INSERT INTO Worker VALUES(101,'Manoj','Kumar',100000,'2022-09-10 12:45','Sales');
+INSERT INTO Worker VALUES(102,'Raj','Aher',200000,'2023-08-19 11:35','Marketing');
+INSERT INTO Worker VALUES(103,'Santosh','Kale',300000,'2024-10-09 9:20','HR');
+INSERT INTO Worker VALUES(104,'Monali','Kumbhar',400000,'2010-03-15 12:15','Sales');
+INSERT INTO Worker VALUES(105,'Sona','Kutaphale',500000,'2018-09-10 09:45','HR');
+
+
+CREATE TABLE Bonus(
+    bonus_amount INT,
+    bonus_date  DATE,
+    worker_ref_id INT,
+    FOREIGN KEY (worker_ref_id) REFERENCES Worker(worker_id)
+);
+
+
+INSERT INTO Bonus VALUES(1000,'2022-09-10',101);
+INSERT INTO Bonus VALUES(2000,'2023-08-11',102);
+INSERT INTO Bonus VALUES(3000,'2024-02-10',103);
+INSERT INTO Bonus VALUES(4000,'2010-05-12',104);
+INSERT INTO Bonus VALUES(5000,'2012-01-16',105);
+
+
+
+CREATE TABLE Title(
+    worker_title VARCHAR(25),
+    affected_from DATE,
+    worker_ref_id INT,
+    FOREIGN KEY (worker_ref_id) REFERENCES Worker(worker_id)
+);
+
+INSERT INTO Title VALUES('Manager','2023-08-11',101);
+INSERT INTO Title VALUES('Executive','2023-08-11',102);
+INSERT INTO Title VALUES('Manager','2010-03-28',103);
+INSERT INTO Title VALUES('Assistant Manager','2022-09-20',104);
+INSERT INTO Title VALUES('Executive','2008-02-01',105);
+
+SELECT * FROM Worker;
+SELECT * FROM Bonus;
+SELECT * FROM Title;
+SELECT F_name,Salary FROM Worker;
+
+SELECT 5+1;
+SELECT now();
+SELECT lcase('PRADNYA');
+SELECT ucase('praDnYa');
+SELECT * FROM Worker WHERE Salary>10000;
+SELECT * FROM Worker WHERE Dept='Sales';
+SELECT * FROM Worker WHERE Salary BETWEEN 100 AND 300000;
+SELECT * FROM Worker WHERE Dept='Sales' OR Dept='Marketing';
+SELECT * FROM Worker WHERE Dept IN('Sales','Marketing','HR');
+SELECT * FROM Worker WHERE Dept NOT IN('Sales');
+
+INSERT INTO Worker VALUES(106,'Sonali','Pame',700000,'2018-09-10 09:45',NULL);
+SELECT * FROM Worker WHERE Dept is NULL;
+SELECT * FROM Worker WHERE F_name LIKE '%a%';
+SELECT * FROM Worker WHERE F_name LIKE '_a%';
+SELECT * FROM Worker WHERE F_name LIKE '_a_';
+SELECT * FROM Worker WHERE F_name LIKE '_a%';
+SELECT * FROM Worker ORDER BY Salary;
+SELECT * FROM Worker ORDER BY Salary DESC; 
+SELECT DISTINCT Dept FROM Worker ; 
+SELECT Dept FROM Worker  GROUP BY Dept ; 
+SELECT Dept,COUNT(Dept) FROM Worker GROUP BY Dept ; 
+SELECT Dept,AVG(Salary) FROM Worker GROUP BY Dept ; 
+SELECT Dept,MIN(Salary) FROM Worker GROUP BY Dept ; 
+SELECT Dept,MAX(Salary) FROM Worker GROUP BY Dept ; 
+SELECT Dept,SUM(Salary) FROM Worker GROUP BY Dept ; 
+--To apply condition with Group by clause we cannot use WHERE clause we have to use GROUP BY HAVING
+--Display Those department count whose having more than 1 worker count is working into those particular department 
+--GROUP BY HAVING is used to apply filtering on grouped data where as WHERE is used to filtering to whole data available in DB
+SELECT Dept,COUNT(Dept) FROM Worker GROUP BY Dept HAVING COUNT(Dept)>1 ; 
+
+--KEY Constraint (Primary key,Foreign key,Unique,Check Constraint,Default)
+CREATE TABLE CUSTOMER( cid INT PRIMARY KEY,cname VARCHAR(25),cage INT NOT NULL DEFAULT 18,email VARCHAR(25) UNIQUE);
+CREATE TABLE ORDERC(oid INT PRIMARY KEY,odate DATETIME,minorder INT,CONSTRAINT min_order_check CHECK(minorder>1),cust_id INT,FOREIGN KEY(cust_id) REFERENCES CUSTOMER(cid));
+
+--Add new Coloumn into table
+ALTER TABLE Worker ADD increment int NOT NULL DEFAULT 0;
+--Modify coloumn
+ALTER TABLE Worker MODIFY increment float NOT NULL DEFAULT 0;
+DESC Worker;
+--Change column --Rename colunm
+ALTER TABLE Worker CHANGE COLUMN increment hike int NOT NULL DEFAULT 0;
+--Drop column
+ALTER TABLE Worker DROP COLUMN hike;
+--Rename table
+ALTER TBALE Worker RENAME TO Worker_Details;
+SELECT * FROM Worker_Details;
+
+--UPDATE
+UPDATE Worker SET F_name='Pradnya',L_name='Aher' WHERE worker_id=101;
+--Update Multiple rows
+SET SQL_SAFE_UPDATES=0;
+UPDATE Worker SET Salary=100000;
+SET SQL_SAFE_UPDATES=1;
+
+--Delete
+DELETE FROM Worker WHERE Salary;=700000;
+--DELETE all rows
+DELETE FROM Title;
+
+
+CREATE TABLE Customer_Details(
+ id INT PRIMARY KEY,
+ cname VARCHAR(225),
+ address VARCHAR(225),
+ gender CHAR(2),
+ city VARCHAR(225),
+ pincode INT
+);
+INSERT INTO Customer_Details values(101,'Pradnya','Warje','F','Pune',411058),(102,'Parth','Ktraj','M','Pune',421058),(103,'Priyanka','Nana-peth','F','Pune',431058);
+
+
+CREATE TABLE Order_Details(
+ o_id INT PRIMARY KEY,
+ delivery_date DATE,
+ cust_id INT,
+ FOREIGN KEY(cust_id) REFERENCES Customer_Details(id) 
+);
+INSERT INTO Order_Details VALUES(1,'20-09-18',101),(2,'16-05-23',102);
+
+SELECT * FROM Customer_Details;
+SELECt * FROM Order_Details;
+
+
+DELETE FROM Customer_Details WHERE id=101;
+
+DROP TABLE Customer_Details;
+DROP TABLE Order_Details;
+
+--On Delete Cascade
+CREATE TABLE Customer_Details(
+ id INT PRIMARY KEY,
+ cname VARCHAR(225),
+ address VARCHAR(225),
+ gender CHAR(2),
+ city VARCHAR(225),
+ pincode INT
+);
+INSERT INTO Customer_Details values(101,'Pradnya','Warje','F','Pune',411058),(102,'Parth','Ktraj','M','Pune',421058),(103,'Priyanka','Nana-peth','F','Pune',431058);
+
+
+CREATE TABLE Order_Details(
+ o_id INT PRIMARY KEY,
+ delivery_date DATE,
+ cust_id INT,
+ FOREIGN KEY(cust_id) REFERENCES Customer_Details(id) ON DELETE CASCADE
+);
+
+INSERT INTO Order_Details VALUES(1,'20-09-18',101),(2,'16-05-23',102);
+
+
+DELETE FROM Customer_Details WHERE id=101;
+SELECT * FROM Customer_Details;
+SELECT * FROM Order_Details;
+
+
+DROP TABLE Customer_Details;
+DROP TABLE Order_Details;
+
+
+--On Delete Set NULL
+CREATE TABLE Customer_Details(
+ id INT PRIMARY KEY,
+ cname VARCHAR(225),
+ address VARCHAR(225),
+ gender CHAR(2),
+ city VARCHAR(225),
+ pincode INT
+);
+INSERT INTO Customer_Details values(101,'Pradnya','Warje','F','Pune',411058),(102,'Parth','Ktraj','M','Pune',421058),(103,'Priyanka','Nana-peth','F','Pune',431058);
+
+
+CREATE TABLE Order_Details(
+ o_id INT PRIMARY KEY,
+ delivery_date DATE,
+ cust_id INT,
+ FOREIGN KEY(cust_id) REFERENCES Customer_Details(id) ON DELETE SET NULL
+);
+
+INSERT INTO Order_Details VALUES(1,'20-09-18',101),(2,'16-05-23',102);
+
+
+DELETE FROM Customer_Details WHERE id=101;
+SELECT * FROM Customer_Details;
+SELECT * FROM Order_Details;
+
+
+--Replace vs Insert
+If data is alredy present then just replace that data with given data and if data is not present then just add new row into DB.
+REPLACE INTO Customer_Details(id,city)VALUES(1,'Parbhani');
+
+REPLACE INTO Customer_Details SET id=1,cname='Ajay',city='Pune';
+
+
+
+--Joins
+
+--Inner Join
+SELECT c.*,o.* FROM Customer_Details AS c INNER JOIN Order_Details AS o ON id=cust_id;
+
+--Outer Join
+
+(Left Outer Join)
+SELECT c.*,o.* FROM Customer_Details AS c LEFT OUTER JOIN Order_Details AS o ON id=cust_id;
+
+(Right Outer Join)
+SELECT c.*,o.* FROM Customer_Details AS c RIGHT OUTER JOIN Order_Details AS o ON id=cust_id;
+
+(FUll Join)--There is no  FULL Key word available in MySql so we have to perform Full join as following
+SELECT * FROM Customer_Details AS c LEFT JOIN Order_Details AS o ON id=cust_id  UNION  SELECT * FROM Customer_Details AS c RIGHT JOIN Order_Details AS o ON id=cust_id;
+
+--Self Join--There is no SELF Key word available in MySql so we have to perform Self join as following
+
+SELECT c1.id,c1.cname,c1.address,c1.gender,c1.city,c1.pincode,c2.id,c2.cname,c2.address,c2.gender,c2.city,c2.pincode FROM Customer_Details AS c1  INNER JOIN Customer_Details as c2 ON c1.id=c2.id;
+
+--Can we perform Join Without using Join Keyword
+(YES)
+SELECT * FROM Customer_Details, Order_Details WHERE Customer_Details.id=Order_Details.cust_id;
+
+--SET opeation(SET perfoem on Row wise)-UNION,INTERSECTION
+
+CRETE TABLE Student1(
+  id INT ,
+  name VRACHAR(255),
+  age INT,
+  address VARCHAR(255)
+);
+
+INSERT INTO Student1 VALUES(1,'Prdanya',22,'Warje'),(2,'Priyanka',25,'Nana Peth'),(3,'Parth',15,'Parbhani');
+
+CRETE TABLE Student2(
+  id INT ,
+  name VRACHAR(255),
+  age INT,
+  address VARCHAR(255)
+);
+INSERT INTO Student2 VALUES(1,'Prdanya',22,'Warje'),(1,'Ajay',28,'Warje'),(2,'Priyanka',25,'Nana Peth'),(3,'Parth',15,'Parbhani');
+
+--UNION
+SELECT * FROM Student1 UNION SELECT * FROM Student2;
+
+
+--INTERSECTION-Intersect keyword is not available in MySQL so perfrom it as follows
+SELECT DISTINCT id FROM Student1 INNER  JOIN Student2 using(id);
+
+
+--MINUS-MINUS keyword is not available in MySQL so perfrom it as follows
+SELECT Student.id FROM Student1 LEFT  JOIN Student2 using(id) WHERE Student2.id IS NULL;
+
+--Sub Queries(Outer query is depend on Inner Query Result) e.g q1(q2) Sub Queris is Alternative for JION.
+SELECT * FROM Student1 WHERE id IN (SELECT id FROM Student2 WHERE name='Priyanka');
+
+--Corelated Sub Query(Outer Query and Inner Query are both dependet on each other i.e they are co realted).
+SELECT * FROM Student1 s1 WHERE 22=(SELECT COUNT(s2.age) FROM Student1 s2 WHERE s2.age>=s1.age);
+
+--View(View is nothing but the temporary Schema its doesn'nt required extra memeory for createing a table.. It is just each user has their different view towards the DB).
+
+CREATE VIEW custom_view AS SELECT id,name FROM Student1;
+
+--Viewing From custom__view
+SELECT * FROM custom_view;
+
+--Altering View
+ALTER VIEW custom_view AS SELECT id,name,age FROM Student1;
+
+--Drop View
+DROP VIEW IF EXISTS custom_view;
